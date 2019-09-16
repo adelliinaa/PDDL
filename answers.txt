@@ -1,0 +1,108 @@
+Matriculation Number: s1728470
+
+Part 1:
+	1.1
+	Adjacent(loc1, loc2)
+	
+	1.2
+	Location(y), At(x, y)
+	Location(BUFF)
+	Location(MB)
+	Location(UB)
+	Location(MF)
+	Location(LB)
+	Location(LF)
+	Location(UF)
+	
+	1.3
+	Plate(x), HasFood(x)
+	
+	1.4
+	Customer(x), Served(x)
+	
+	1.5
+	Initial state:
+
+	Adjacent(BUFF, UF) and Adjacent(UF, BUFF) and Adjacent(UF, UB) and Adjacent(UB, UF) and Adjacent(MF, LF) and Adjacent(UB, MB) and Adjacent(UF, MF) and Adjacent(LF, MF) and Adjacent(LB, MB) and Adjacent(MB, LB) and Adjacent(MF, UF) and Adjacent(MB, UB) and Adjacent(LB, LF) and Adjacent(LF, LB)
+	
+	and Agent(a) and Plate(p) and not HasFood(p) and Customer(c) and At(a, BUFF) and At(p, BUFF) and At(c, LB)
+	
+	1.6
+	Action(PickUp(a, p, l)
+	Precond: Location(l) and Agent(a) and Plate(p) and At(a,l) ∧ At(p,l) and not HoldingPlateOrBroom(a)
+	Effect: Holding(a,p) and not At(p,l) and HoldingPlateOrBroom(a)
+	)
+	
+	1.7
+	Action(HandOver(a,p,l,c)
+	Precond: Location(l) and Agent(a) and Customer(c) and At(a,l) and  At(c,l) and not Served(c) and Plate(p) and not At(p,l) and Holding(a, p) and HasFood(p) and HoldingPlateOrBroom(a)
+	Effect: Served(c) and not HoldingPlateOrBroom(a) and not Holding(a,p)
+	)
+	
+	1.8
+	Action(Fill(a,p)
+	Precond: Agent(a) and Plate(p) and not HasFood(p) and At(a, BUFF) and Holding(a,p) and HoldingPlateOrBroom(a)
+	Effect: HasFood(p)
+	)
+	
+	1.9
+	Action(Move(a, from, to)
+	Precond: Agent(a) and Location(from) and Location(to) and Adjacent(from, to) and At(a, from) and (from != to)
+	Effect: At(a, to) and not At(a, from)
+	)
+	
+	1.10
+	Initial(
+	Agent(a) and Location(BUFF) and At(a, BUFF) and Plate(p) and not HasFood(p) and At(p, BUFF) and Customer(C) and Location(UF) and not Served(C) and At(C, UF) and not Holding(a, p) and not HoldingPlateOrBroom(a)
+	)
+	
+	Goal(
+	Served(C) and At(a, UF)
+	)
+	
+	Backward State Space Search:
+
+	State Description: Served(C)
+	Relevant Actions: HandOver(a, p, UF, C)
+	Choose: HandOver(a, p, UF, C)
+	
+	State Description: Holding(a, p) and At(a, UF) and HasFood(p) and not Served(c) and HoldingPlateOrBroom(a)
+	Relevant Actions: Move(a, BUFF, UF), Move(a, UB, UF), PickUp(a, p, UF), Move(a, MF, UF)
+	Choose: Move(a, BUFF, UF)
+	
+	State Description: Holding(a, p) and At(a, BUFF) and HasFood(p) and not Served(c) and HoldingPlateOrBroom(a)
+	Relevant Actions: Fill(a, p), PickUp (a, p, BUFF), Move(a, UF, BUFF)
+	Choose: Fill(a, p)
+	
+	State Description: Holding(a, p) and At(a, BUFF) and not HasFood(p) and not Served(c) and HoldingPlateOrBroom(a)
+	Relevant Actions: PickUp(a, p, BUFF), Move(a, UF, BUFF)
+	Choose: PickUp(a, p, BUFF)
+	
+	State Description: At(p, BUFF) and At(a, BUFF) and not HasFood(p) and not Served(c) and not Holding(a,p) and not HoldingPlateOrBroom(a)
+	
+	The actions which lead from the initial state to the goal state: Location(BUFF) and Agent(a) and Customer(C) and Location(UF) and At(C, UF) ∧ Plate(p).
+	We have reached the initial state.
+	
+	Final plan:
+	PickUp(a, p, BUFF)
+	Fill(a, p)
+	Move(a, BUFF, UF)
+	HandOver(a, p, UF, C)
+	
+	Part 4:
+	4.1
+In order to satisfy social expectations, the agent should take the customer’s order into consideration. This goal could be satisfied by using a queue of customers and orders in the system. In this way, the robot would serve on a first-come, first served basis.
+
+Furthermore, temperature dependance orders should have priority in the queue of the orders and therefore, these ones should be served first.
+	4.2  
+The agent should take into consideration a queue of lists (each table would have a position in the queue, and for each of these positions there is a list of the items ordered by the respective customer, some of them having priority (such as temperature dependent items - coffee, ice-cream)). 
+
+The sushi should be served first, then the hot drink, and then the dessert.
+
+The arrangement of items to be served to a customer should have goals (rules) such as:
+
+    - serve the drinks first
+    - serve the starters before the main course and before the dessert
+    - in order to serve a main course, there would have to be no starters in the order which have not been served first
+
+Including actions such as ServeDrink, ServeMainCourse , ServeSweetCourse
